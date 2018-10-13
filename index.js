@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const bot = new Discord.Client();
 
-var key = require("key.js");
+var key = require("./secretkey.js");
 
 //console.log(key);
 bot.on('message', (message) => {
@@ -12,5 +12,4 @@ bot.on('message', (message) => {
     }
 
 });
-
-bot.login('');
+bot.login(key.key);
