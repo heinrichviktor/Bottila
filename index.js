@@ -1,7 +1,6 @@
-const key = require("./secretkey.js");
+const key = require("./secretkey");
 const Discord = require("discord.js");
 const snoowrap = require("snoowrap");
-const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 const bot = new Discord.Client();
 
@@ -14,49 +13,63 @@ const r = new snoowrap({
 
 bot.login(key.discordKey);
 
-var xmlhttp = new XMLHttpRequest();
-var subreddit = "dankmemes";
-//.slice(6);
-//r.getRandomSubmission('dankmemes').then(console.log);
 bot.on("message", message => {
-  //console.log(message.content);
-  //if(message.content == 'b!img'){
-  //if(message.content.includes("b!img")){
-  if (message.content == "b!img") {
-    subreddit = "dankmemes";
-    sendImage(subreddit);
-  } else if (message.content.startsWith("b!img")) {
-    subreddit = message.content.slice(6);
-    sendImage(subreddit);
-  } else {
+  //TODO: http errorok
+  msg = [];
+  isSub = false;
+  if (message.member.user.username != "Bottila") {
+    msg = message.content.split(" ");
+  }
+  if (msg[1] && msg[1].match(/^[a-zA-Z0-9]+$/)) {
+    isSub = true;
+  }
+  if (msg[0] == "b!img" && isSub && msg.length >= 2) {
+    switch (msg[2]) {
+      case "-hot":
+        getHotImages(msg[1]);
+        break;
+      case "-top":
+        getTopImages(msg[1]);
+        break;
+      default:
+        getHotImages(msg[1]);
+        break;
+    }
+  } else if (msg[0] == "b!img") {
+    message.channel.send("Vmi kene még");
   }
 
-  function sendImage(subreddit) {
-    xmlhttp.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-        var myObj = JSON.parse(this.responseText);
-        var img = myObj.data.children[0].data.url;
-        var authorText = myObj.data.children[0].data.title;
-        message.channel.send(authorText);
+  function getHotImages(sub) {
+    r.getHot(sub, { limit: 100 })
+      //.map(post => post.url)
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
+      //.then(urls => console.log(urls[getRandomInt(urls.length)]))
+      .then(post => sendImg(post[getRandomInt(post.length)]));
 
-        if (myObj.data.children[0].data.content_categories == "writing") {
-          console.log("szöveg");
-          message.channel.send("Olvasd el tesa: " + myObj.data.children[0].data.url);
-        } else {
-          let picture = new Discord.RichEmbed().setImage(img);
-          message.channel.send(picture);
-          console.log("kép");
-        }
-        //console.log(myObj.data.children[0].data.selftext)
-        //
-      }
+    let getRandomInt = function(max) {
+      return Math.floor(Math.random() * Math.floor(max));
     };
-    //console.log(subreddit);
-    xmlhttp.open(
-      "GET",
-      "https://www.reddit.com/r/" + subreddit + "/new.json?sort=new",
-      true
-    );
-    xmlhttp.send();
+  }
+  function getTopImages(sub) {
+    r.getTop(sub, { limit: 25, t: "all" })
+      //.map(post => {post.url, post.title})
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
+      //.then(urls => console.log(urls[getRandomInt(urls.length)]))
+      .then(post => sendImg(post[getRandomInt(post.length)]));
+
+    let getRandomInt = function(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    };
+  }
+
+  function sendImg(post) {
+    if (post == undefined) {
+      message.channel.send("Nincs img");
+    } else {
+      let picture = new Discord.RichEmbed().setImage(post.url);
+      message.channel.send(post.title);
+      message.channel.send("https://reddit.com" + post.permalink);
+      message.channel.send(picture);
+    }
   }
 });
