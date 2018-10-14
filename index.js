@@ -2,7 +2,9 @@ const key = require("./secretkey.js");
 const Discord = require("discord.js");
 const snoowrap = require("snoowrap");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
 const bot = new Discord.Client();
+
 const r = new snoowrap({
   userAgent: "Discord bot",
   clientId: key.redditKey,
@@ -22,14 +24,14 @@ bot.on("message", message => {
   //if(message.content.includes("b!img")){
   if (message.content == "b!img") {
     subreddit = "dankmemes";
-    sendImage();
+    sendImage(subreddit);
   } else if (message.content.startsWith("b!img")) {
     subreddit = message.content.slice(6);
-    sendImage();
+    sendImage(subreddit);
   } else {
   }
 
-  function sendImage() {
+  function sendImage(subreddit) {
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         var myObj = JSON.parse(this.responseText);
