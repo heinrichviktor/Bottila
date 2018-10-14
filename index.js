@@ -15,35 +15,67 @@ const r = new snoowrap({
 bot.login(key.discordKey);
 
 bot.on("message", message => {
-  //console.log(message.content);
-  //if(message.content == 'b!img'){
-  //if(message.content.includes("b!img")){
-  msg = message.content.split(" ");
-  if( msg[0] == "b!img" ){
-    /*
-    url = "https://i.imgur.com/CQdnUuj.jpg"
-    sendImg(url, message);
-    */
-    sub = msg[1];
-    getImages(sub);
+  //TODO: ha nincs url
+  //TODO: nincs sub
+  msg = [];
+  isSub = false;
+  if(message.member.user.username != "Bottila"){
+    msg = message.content.split(" ");
+  }
+  if(msg[1] && msg[1].match(/^[a-zA-Z0-9]+$/)){
+    isSub = true;
+  }
+  if( msg[0] == "b!img" && isSub && msg.length >= 2){
+    switch (msg[2]) {
+      case "-hot":
+        getHotImages(msg[1]);
+        break;
+      case "-top":
+        getTopImages(msg[1]);
+      break;
+      default:
+        getHotImages(msg[1]);
+        break;
+    } 
+  } else if(msg[0] == "b!img") {
+    message.channel.send("Vmi kene még");
   }
 
-  function getImages(sub){
-    r.getHot(sub, {limit: 100}).map(post => post.url)
-      .filter(url => url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
+  function getHotImages(sub){
+    r.getHot(sub, {limit: 100})
+      //.map(post => post.url)
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
       //.then(urls => console.log(urls[getRandomInt(urls.length)]))
-      .then(urls => sendImg(urls[getRandomInt(urls.length)]));
+      .then(post => sendImg(post[getRandomInt(post.length)]));
+  
+      let getRandomInt = function(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+      }
+  }
+  function getTopImages(sub){
+    r.getTop(sub, {limit: 25, t: "all"})
+      //.map(post => {post.url, post.title})
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
+      //.then(urls => console.log(urls[getRandomInt(urls.length)]))
+      .then(post => sendImg(post[getRandomInt(post.length)]));
   
       let getRandomInt = function(max) {
         return Math.floor(Math.random() * Math.floor(max));
       }
   }
 
-  function sendImg(url){
-    let picture = new Discord.RichEmbed().setImage(url);
-    message.channel.send(picture);
+  function sendImg(post){
+    if(post == undefined){
+      message.channel.send("Nincs img");
+    
+    } else {
+      let picture = new Discord.RichEmbed().setImage(post.url);
+      message.channel.send(post.title);
+      message.channel.send("https://reddit.com" + post.permalink)
+      message.channel.send(picture);
+    }
+    
   }
-  //TODO: nincs url
 });
 
 
