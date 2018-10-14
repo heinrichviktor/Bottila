@@ -1,4 +1,4 @@
-# Bottila
+# Bottila a bot
 
 git add README.md
 git commit -m "README updated"
