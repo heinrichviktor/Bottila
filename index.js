@@ -4,7 +4,7 @@ const snoowrap = require("snoowrap");
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const bot = new Discord.Client();
 const r = new snoowrap({
-  userAgent: "put your user-agent string here",
+  userAgent: "Discord bot",
   clientId: key.redditKey,
   clientSecret: key.redditClientSecret,
   refreshToken: key.redditRefreshToken
