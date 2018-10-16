@@ -20,7 +20,7 @@ bot.on("message", message => {
   if (message.member.user.username != "Bottila") {
     msg = message.content.split(" ");
   }
-  if (msg[1] && msg[1].match(/^[a-zA-Z0-9]+$/)) {
+  if (msg[1] && msg[1].match(/^[a-zA-Z0-9_]+$/)) {
     isSub = true;
   }
   if (msg[0] == "b!img" && isSub && msg.length >= 2) {
@@ -61,7 +61,7 @@ bot.on("message", message => {
       return Math.floor(Math.random() * Math.floor(max));
     };
   }
-
+  
   function sendImg(post) {
     if (post == undefined) {
       message.channel.send("Nincs img");
