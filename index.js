@@ -3,7 +3,7 @@ const Discord = require("discord.js");
 const snoowrap = require("snoowrap");
 
 const bot = new Discord.Client();
-
+var subR;
 const r = new snoowrap({
   userAgent: "Discord bot",
   clientId: key.redditKey,
@@ -15,6 +15,7 @@ bot.login(key.discordKey);
 
 bot.on("message", message => {
   //TODO: http errorok
+  
   msg = [];
   isSub = false;
   if (message.member.user.username != "Bottila") {
@@ -37,13 +38,35 @@ bot.on("message", message => {
     }
   } else if (msg[0] == "b!img") {
     message.channel.send("Vmi kene még");
-  }
+  }/*else if (msg[0] == "b!gif" & isSub && msg.length >= 2) {
+    switch (msg[2]) {
+      case "-hot":
+        //getHotGifs(msg[1]);
+        break;
+      case "-top":
+        //getTopGifs(msg[1]);
+        break;
+      default:
+        //getHotGifs(msg[1]);
+        break;
+    }
+  }else if (msg[0] == "b!vid" & isSub && msg.length >= 2) {
+    switch (msg[2]) {
+      case "-hot":
+        getHotVids(msg[1]);
+        break;
+      case "-top":
+        getTopVids(msg[1]);
+        break;
+      default:
+        getHotVids(msg[1]);
+        break;
+    }
+  }*/
 
   function getHotImages(sub) {
-    r.getHot(sub, { limit: 100 })
-      //.map(post => post.url)
+    r.getHot(sub, { limit: 25 })
       .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
-      //.then(urls => console.log(urls[getRandomInt(urls.length)]))
       .then(post => sendImg(post[getRandomInt(post.length)]));
 
     let getRandomInt = function(max) {
@@ -52,16 +75,34 @@ bot.on("message", message => {
   }
   function getTopImages(sub) {
     r.getTop(sub, { limit: 25, t: "all" })
-      //.map(post => {post.url, post.title})
       .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(png|jpg)/gi))
-      //.then(urls => console.log(urls[getRandomInt(urls.length)]))
       .then(post => sendImg(post[getRandomInt(post.length)]));
 
     let getRandomInt = function(max) {
       return Math.floor(Math.random() * Math.floor(max));
     };
   }
-  
+  /*
+  function getHotGifs(sub) {
+    r.getHot(sub, { limit: 25 })
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(mp4)/gi))
+      .then(post => sendImg(post[getRandomInt(post.length)]));
+
+    let getRandomInt = function(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    };
+  }
+
+  function getTopGifs(sub) {
+    r.getTop(sub, { limit: 25, t: "all" })
+      .filter(post => post.url.match(/(https:|http:)[a-z0-9/\.]+(gif|mp4)/gi))
+      .then(post => sendImg(post[getRandomInt(post.length)]));
+
+    let getRandomInt = function(max) {
+      return Math.floor(Math.random() * Math.floor(max));
+    };
+  }
+  */
   function sendImg(post) {
     if (post == undefined) {
       message.channel.send("Nincs img");
