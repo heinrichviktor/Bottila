@@ -20,7 +20,7 @@ bot.on("message", message => {
   if (message.member.user.username != "Bottila") {
     msg = message.content.split(" ");
   }
-  if (msg[1] && msg[1].match(/^[a-zA-Z0-9_]+$/)) {
+  if (msg[1] && msg[1].match(/^[a-zA-Z0-9_+]+$/)) {
     isSub = true;
   }
   if (msg[0] == "b!img" && isSub && msg.length >= 2) {
